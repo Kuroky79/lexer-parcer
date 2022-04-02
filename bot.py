@@ -1,7 +1,7 @@
 import telebot
 import config
 from telebot import types
-from operations.auth import auth, get_projects, get_tasks
+from operations.auth import auth, get_projects, get_tasks, get_users_from_task
 from string import Template
 
 bot = telebot.TeleBot(config.TOKEN)
@@ -12,8 +12,8 @@ def sticker(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     btn2 = types.KeyboardButton("❓ Задать вопрос")
     markup.add(btn2)
-    sti = open('D:\Telegram Desktop\sticker.webp', 'rb')
-    bot.send_sticker(message.chat.id, sti)
+    ''''sti = open('D:\Telegram Desktop\sticker.webp', 'rb')
+    bot.send_sticker(message.chat.id, sti)'''
     msg = bot.send_message(message.chat.id,
                            "Добро пожаловать, {0.first_name}!\nя - <b>{1.first_name}</b>, бот созданный чтобы быть лучшей системой для работы.".format(
                                message.from_user, bot.get_me()),
@@ -95,10 +95,11 @@ def callback_worker(call):
     if call.data.split('.')[0] == 'task':
         for info in task_info:
             name = info['task_name']
-            desc = info['description']
-            deadline = info['deadline']
             if name == call.data.split('.')[1]:
+                desc = info['description']
+                deadline = info['deadline']
                 text = f'Название задачи: {name} \n Описание: {desc} \n Дедлайн: {deadline}'
+                break
         bot.send_message(call.message.chat.id, text=text)
     if call.data.split('.')[0] == 'project':
         for info in project_info:
@@ -106,7 +107,25 @@ def callback_worker(call):
             desc = info['projDesc']
             if name == call.data.split('.')[1]:
                 text = f'Название проекта: {name} \n Описание: {desc}'
-        bot.send_message(call.message.chat.id, text=text)
+                bot.send_message(call.message.chat.id, text=text)
+                project_id = info['id']
+                break
+        tasks_info = get_tasks(f'http://26.190.19.174:8000/project/task-project/get?project_id={project_id}',
+                               token)
+        for info in tasks_info:
+            name = info['task_name']
+            desc = info['description']
+            deadline = info['deadline']
+            text = f'Название задачи: {name} \n Описание: {desc} \n Дедлайн: {deadline} \n Работающие над задачей: '
+            task_id = info['id']
+            user_info = get_users_from_task(f'http://26.190.19.174:8000/project/task-users/get?task_id={task_id}',
+                                            token)
+            for user in user_info:
+                user_name = user['username']
+                user_email = user['email']
+                text_user = f'Пользователь: {user_name}, {user_email} \n'
+                text += text_user
+            bot.send_message(call.message.chat.id, text=text)
 
 
 '''

@@ -16,13 +16,6 @@ def auth(username: str, password: str):
     return (ast.literal_eval(r.text))['access_token']
 
 
-def get_some(url: str, token: str):
-    session = requests.Session()
-    session.headers.update({'Authorization': 'Bearer ' + token})
-    r = session.get(url)
-    return r.text
-
-
 def get_projects(url: str, token: str):
     session = requests.Session()
     session.headers.update({'Authorization': 'Bearer ' + token})
@@ -37,3 +30,11 @@ def get_tasks(url: str, token: str):  # сюда
     r = session.get(url)
     tasks_info = ast.literal_eval(r.text)
     return tasks_info
+
+
+def get_users_from_task(url: str, token: str):
+    session = requests.Session()
+    session.headers.update({'Authorization': 'Bearer ' + token})
+    r = session.get(url)
+    users_info = ast.literal_eval(r.text)
+    return users_info
