@@ -2,16 +2,15 @@ from dataclasses import dataclass
 
 
 @dataclass
-class NumberNode: #импорт класс данных числовой узел
+class NumberNode:
     value: any
 
-    def __repr__(self): # возвращает значение в виде строки
+    def __repr__(self): #метод который возвращает значение в виде строки
         return f"{self.value}"
 
-
 @dataclass
-class AddNode:
-    node_a: any # узел добавления для добавления двух узлов
+class AddNode: #узел добавления
+    node_a: any
     node_b: any
 
     def __repr__(self):

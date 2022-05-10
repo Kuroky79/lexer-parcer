@@ -1,26 +1,26 @@
-from tokens import TokenType #преобразует наши токены в узлы
+from tokens import TokenType
 from nodes import *
 
 
 class Parser:
-    def __init__(self, tokens): #парацинировать наших токенов
-        self.tokens = iter(tokens) #находение токенов в форме иттератора
+    def __init__(self, tokens):
+        self.tokens = iter(tokens)
         self.advance()
 
-    def raise_error(self): #метод поднятой ошибки
+    def raise_error(self):
         raise Exception("Invalid syntax")
 
     def advance(self):
         try:
-            self.current_token = next(self.tokens) #расширенный метод который назначает переход к следующему токену в ячейках со стопом иттерации которая достигается в конце списка токенов
+            self.current_token = next(self.tokens)
         except StopIteration:
             self.current_token = None
 
-    def parse(self): #метод уничтожения в собственном методе expr который вернет узел
+    def parse(self):
         if self.current_token == None:
             return None
 
-        result = self.expr()
+        result = self.expr() #поместим метод expr в собственный метод
 
         if self.current_token != None:
             self.raise_error()
@@ -28,7 +28,7 @@ class Parser:
         return result
 
     def expr(self):
-        result = self.term() #вызов термина если находится оператор записываем в результат
+        result = self.term()
 
         while self.current_token != None and self.current_token.type in (TokenType.PLUS, TokenType.MINUS):
             if self.current_token.type == TokenType.PLUS:
@@ -66,7 +66,7 @@ class Parser:
             self.advance()
             return result
 
-        elif token.type == TokenType.NUMBER: #проверка равен ли текущий токен числу
+        elif token.type == TokenType.NUMBER:
             self.advance()
             return NumberNode(token.value)
 
